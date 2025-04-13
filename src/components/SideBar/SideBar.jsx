@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 
-import "./SideBar.css";
+import style from "./SideBar.module.css";
 import { useProducts } from "../../context/productContext";
 
 const SideBar = () => {
@@ -36,25 +36,24 @@ const SideBar = () => {
 
     setSearchedProduct(filteredProducts);
   }, [priceRange, selectedCategories, productData, setSearchedProduct]);
-  
 
   return (
-    <>
-      <div className="container">
-        <h2 className="heading">Filter</h2>
-        <p className="price">Price Upto: &#8377;{priceRange}</p>
+    <div>
+      <div className={style.container}>
+        <h2 className={style.heading}>Filter</h2>
+        <p className={style.price}>Price Upto: &#8377;{priceRange}</p>
         <input
           type="range"
-          className="slider"
+          className={style.slider}
           min="0"
           max="80000"
           step="1000"
           value={priceRange}
           onChange={(e) => setPriceRange(e.target.value)}
         />
-        <h2 className="heading">Category</h2>
+        <h2 className={style.heading}>Category</h2>
 
-        <div className="men checkbox">
+        <div className={style.checkbox}>
           <input
             type="checkbox"
             value="men's clothing"
@@ -62,7 +61,7 @@ const SideBar = () => {
           />
           <label>Men's Clothing</label>
         </div>
-        <div className="women checkbox">
+        <div className={style.checkbox}>
           <input
             type="checkbox"
             value="women's clothing"
@@ -70,7 +69,7 @@ const SideBar = () => {
           />
           <label>Women's Clothing</label>
         </div>
-        <div className="jewelery checkbox">
+        <div className={style.checkbox}>
           <input
             type="checkbox"
             value="jewelery"
@@ -78,7 +77,7 @@ const SideBar = () => {
           />
           <label>Jwellery</label>
         </div>
-        <div className="electronics checkbox">
+        <div className={style.checkbox}>
           <input
             type="checkbox"
             value="electronics"
@@ -88,7 +87,7 @@ const SideBar = () => {
         </div>
       </div>
       <Outlet />
-    </>
+    </div>
   );
 };
 

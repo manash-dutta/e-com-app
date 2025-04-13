@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
-
 import axios from "axios";
+
+import { db } from "../config/firebaseInit";
 
 const ProductContext = createContext();
 
