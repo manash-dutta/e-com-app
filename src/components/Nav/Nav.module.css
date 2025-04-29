@@ -1,3 +1,7 @@
+.navWrapper {
+  position: relative;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -13,6 +17,8 @@ nav {
 .logo {
   font-size: 3rem;
   color: #eee;
+  padding-left: 2rem;
+  cursor: pointer;
 }
 
 .searchContainer {
@@ -92,7 +98,6 @@ nav {
 .link {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
   padding: 1rem 2rem;
   cursor: pointer;
   color: #eee;
@@ -102,6 +107,12 @@ nav {
 .link:hover {
   background-color: #d3d9d44d;
   color: #2e9cca;
+  border-radius: 100vh;
+}
+
+.active {
+  background-color: #d3d9d44d;
+  border: 1px solid #2e9cca;
   border-radius: 100vh;
 }
 
@@ -117,4 +128,44 @@ nav {
   font-size: 2.5rem;
   color: inherit;
   letter-spacing: 0.1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.8rem;
+}
+
+@media (max-width: 1000px) {
+  .input {
+    width: 40rem;
+  }
+
+  .linkIcon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 770px) {
+  .input {
+    width: 30rem;
+  }
+
+  .links {
+    column-gap: 0.5rem;
+  }
+
+  .link {
+    padding: 1rem;
+  }
+
+  .linkIcon {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 550px) {
+  .searchContainer {
+    position: absolute;
+    top: 7rem;
+    right: 2rem;
+  }
 }

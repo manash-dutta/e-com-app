@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 
@@ -10,20 +10,29 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const { signIn, error, setError } = useAuth();
   const navigate = useNavigate();
+  const nameRef = useRef(null);
+
+  useEffect(() => {
+    nameRef.current.focus();
+  }, []);
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
-      const timeout = setTimeout(() => setError(null), 2500); // let toast settle
-      return () => clearTimeout(timeout); // clean up
+      const toastId = toast.error(error, {
+        onClose: () => setError(null),
+      });
+      return () => toast.dismiss(toastId);
     }
-  }, [error]);
+  }, [error, setError]);
 
-  useEffect(() => {
-    return () => {
-      setError(null); // clean up on unmount
-    };
-  }, []);
+  const handleSignIn = async () => {
+    const success = await signIn(email, password);
+    if (success) {
+      setEmail("");
+      setPassword("");
+      navigate("/");
+    }
+  };
 
   return (
     <div className={style.container}>
@@ -35,6 +44,7 @@ const SignIn = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={style.input}
+          ref={nameRef}
         />
         <input
           type="password"
@@ -42,24 +52,15 @@ const SignIn = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={style.input}
+          onKeyDown={(e) => e.key === "Enter" && handleSignIn()}
         />
         <div className={style.buttons}>
-          <button
-            className={style.button}
-            onClick={async () => {
-              const success = await signIn(email, password);
-              if (success) {
-                setEmail("");
-                setPassword("");
-                navigate("/");
-              }
-            }}
-          >
+          <button className={style.button} onClick={handleSignIn}>
             Sign In
           </button>
         </div>
         <Link to="/signup">
-          <h2 className={style.signup}>Not Signed Up yet?</h2>
+          <h2 className={style.signup}>Not Signed Up yet? Sign Up Now</h2>
         </Link>
       </div>
       <ToastContainer

@@ -1,8 +1,7 @@
 .gridWrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
   gap: 2rem;
-  /* padding: 2rem; */
   justify-content: center;
   width: 75%;
   position: absolute;
@@ -18,7 +17,8 @@
   background-color: #fff;
   margin-top: 2rem;
   max-height: 40rem;
-  width: 30rem;
+  width: 100%;
+  max-width: 35rem;
 }
 
 .imageContainer {
@@ -88,4 +88,23 @@
 
 .button:hover {
   filter: brightness(80%);
+}
+
+@media (max-width: 1000px) {
+  .gridWrapper {
+    width: 100%;
+    padding-inline: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    gap: 1rem;
+    justify-content: center;
+    right: 50%;
+    transform: translateX(50%);
+  }
+}
+
+@media (max-width: 550px) {
+  .container {
+    max-width: 100%;
+  }
 }

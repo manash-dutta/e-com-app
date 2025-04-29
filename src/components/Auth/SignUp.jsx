@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 
@@ -8,22 +8,36 @@ import style from "./Sign.module.css";
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { signUp, error, setError } = useAuth();
   const navigate = useNavigate();
+  const nameRef = useRef(null);
+
+  useEffect(() => {
+    nameRef.current.focus();
+  }, []);
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
-      const timeout = setTimeout(() => setError(null), 2500); // let toast settle
-      return () => clearTimeout(timeout); // clean up
+      const toastId = toast.error(error, {
+        onClose: () => setError(null),
+      });
+      return () => toast.dismiss(toastId);
     }
-  }, [error]);
+  }, [error, setError]);
 
-  useEffect(() => {
-    return () => {
-      setError(null); // clean up on unmount
-    };
-  }, []);
+  const handleSignUp = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    const success = await signUp(email, password);
+    setLoading(false);
+    if (success) {
+      setEmail("");
+      setPassword("");
+      navigate("/");
+    }
+  };
 
   return (
     <div className={style.container}>
@@ -35,6 +49,7 @@ const SignUp = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={style.input}
+          ref={nameRef}
         />
         <input
           type="password"
@@ -42,24 +57,15 @@ const SignUp = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className={style.input}
+          onKeyDown={(e) => e.key === "Enter" && handleSignUp()}
         />
         <div className={style.buttons}>
-          <button
-            className={style.button}
-            onClick={async () => {
-              const success = await signUp(email, password);
-              if (success) {
-                setEmail("");
-                setPassword("");
-                navigate("/");
-              }
-            }}
-          >
+          <button className={style.button} onClick={handleSignUp}>
             Sign Up
           </button>
         </div>
         <Link to="/signin">
-          <h2 className={style.signup}>Already registered? Sign In</h2>
+          <h2 className={style.signup}>Already registered? Sign In Now</h2>
         </Link>
       </div>
       <ToastContainer

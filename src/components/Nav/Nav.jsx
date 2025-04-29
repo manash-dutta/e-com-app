@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, Link, useNavigate } from "react-router";
+import { Outlet, NavLink, useNavigate } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import {
@@ -15,16 +15,13 @@ import { useAuth } from "../../context/authContext";
 import style from "./Nav.module.css";
 
 const Nav = () => {
-  const { user, error, logOut } = useAuth();
-  
-  // to track what user is typing in the input field of the search bar
   const [userInput, setUserInput] = useState("");
-  // to track the products that matches to userInput
   const [searchedProducts, setSearchedProducts] = useState([]);
-
   const navigate = useNavigate();
 
-  const { productData, setSearchedProduct } = useProducts();
+  const { user, logOut } = useAuth();
+
+  const { productData, setSearchedProduct, isTablet } = useProducts();
 
   useEffect(() => {
     const filteredProducts = productData.filter((product) =>
@@ -42,6 +39,7 @@ const Nav = () => {
     }
     setSearchedProducts([]);
     setUserInput("");
+    navigate("/");
   };
 
   const handleKeyDown = (e) => {
@@ -50,7 +48,11 @@ const Nav = () => {
         setSearchedProduct(productData);
       } else {
         setSearchedProduct(searchedProducts);
+        navigate("/");
       }
+      setSearchedProducts([]);
+    }
+    if (e.key === "Escape") {
       setSearchedProducts([]);
     }
   };
@@ -67,9 +69,9 @@ const Nav = () => {
       if (userChoice) {
         try {
           await logOut();
-          toast.success("You have successfully logged out.");
-
-          navigate("/");
+          toast.success("You have successfully logged out.", {
+            onClose: () => navigate("/"),
+          });
         } catch (error) {
           console.error("Logout failed:", error.message);
           toast.error("Something went wrong during logout. Please try again.");
@@ -82,8 +84,10 @@ const Nav = () => {
 
   return (
     <>
-      <nav>
-        <div className={style.logo}>Busy Buy</div>
+      <nav className={style.navWrapper}>
+        <div className={style.logo} onClick={() => navigate("/")}>
+          BusyBuy
+        </div>
         <div className={style.searchContainer}>
           <div className={style.search}>
             <input
@@ -121,42 +125,71 @@ const Nav = () => {
           )}
         </div>
         <div className={style.links}>
-          <Link to="/">
+          <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? style.active : undefined)}
+          >
             <div className={style.link}>
-              <FontAwesomeIcon icon={faHouse} className={style.linkIcon} />
-              <button className={style.btn}>Home</button>
+              <button className={style.btn}>
+                <FontAwesomeIcon icon={faHouse} className={style.linkIcon} />
+                {!isTablet && "Home"}
+              </button>
             </div>
-          </Link>
+          </NavLink>
           {user && (
-            <Link to="/orders">
+            <NavLink
+              to="/orders"
+              className={({ isActive }) =>
+                isActive ? style.active : undefined
+              }
+            >
               <div className={style.link}>
-                <FontAwesomeIcon
-                  icon={faBasketShopping}
-                  className={style.linkIcon}
-                />
-                <button className={style.btn}>My Orders</button>
+                <button className={style.btn}>
+                  <FontAwesomeIcon
+                    icon={faBasketShopping}
+                    className={style.linkIcon}
+                  />
+
+                  {!isTablet && "My Orders"}
+                </button>
               </div>
-            </Link>
+            </NavLink>
           )}
-          <div className={style.link}>
-            <FontAwesomeIcon icon={faCartShopping} className={style.linkIcon} />
-            <button className={style.btn}>Cart</button>
-          </div>
+
+          {user && (
+            <NavLink
+              to="/cart"
+              className={({ isActive }) =>
+                isActive ? style.active : undefined
+              }
+            >
+              <div className={style.link}>
+                <button className={style.btn}>
+                  <FontAwesomeIcon
+                    icon={faCartShopping}
+                    className={style.linkIcon}
+                  />
+                  {!isTablet && "Cart"}
+                </button>
+              </div>
+            </NavLink>
+          )}
 
           <div className={style.link} onClick={handleLogOut}>
-            <FontAwesomeIcon
-              icon={faRightToBracket}
-              className={style.linkIcon}
-            />
             <button className={style.btn}>
-              {user ? "Sign Out" : "Sign in"}
+              <FontAwesomeIcon
+                icon={faRightToBracket}
+                className={style.linkIcon}
+              />
+
+              {!isTablet && (user ? "Sign Out" : "Sign in")}
             </button>
           </div>
         </div>
       </nav>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick={true}

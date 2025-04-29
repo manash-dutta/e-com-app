@@ -7,6 +7,9 @@ import HomePageLayout from "./pages/HomePageLayout";
 import SignIn from "./components/Auth/SignIn";
 import SignUp from "./components/Auth/SignUp";
 import Cart from "./components/Cart/Cart";
+import Orders from "./components/Orders/Orders";
+import Page404 from "./pages/Page404/Page404";
+import ProtectedRoutes from "./components/Auth/ProtectedRoutes";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -20,8 +23,18 @@ const App = () => {
         },
         { path: "signup", Component: SignUp },
         { path: "signin", Component: SignIn },
-        { path: "cart", Component: Cart },
+        {
+          element: <ProtectedRoutes />,
+          children: [
+            { path: "cart", Component: Cart },
+            { path: "orders", Component: Orders },
+          ],
+        },
       ],
+    },
+    {
+      path: "*",
+      Component: Page404,
     },
   ]);
   return (

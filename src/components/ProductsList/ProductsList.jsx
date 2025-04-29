@@ -1,5 +1,6 @@
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { ToastContainer, toast, Bounce } from "react-toastify";
+import Spinner from 'react-spinner-material';
 
 import { db } from "../../config/firebaseInit";
 import style from "./ProductsList.module.css";
@@ -23,25 +24,44 @@ const ProductsList = () => {
 
     try {
       const cartItemRef = doc(db, "carts", user.uid + "_" + product.id);
-      await setDoc(cartItemRef, {
-        userId: user.uid,
-        productId: product.id,
-        title: product.title,
-        description: product.description,
-        price: Math.floor(product.price * 85),
-        image: product.image,
-        quantity: 1,
-      });
-      toast.success("Item Added to Cart");
+      const existingItem = await getDoc(cartItemRef);
+
+      if (existingItem.exists()) {
+        const currentQuantity = existingItem.data().quantity || 1;
+        await updateDoc(cartItemRef, { quantity: currentQuantity + 1 });
+        toast.success("Item Quantity increased");
+      } else {
+        await setDoc(cartItemRef, {
+          userId: user.uid,
+          productId: product.id,
+          title: product.title,
+          description: product.description,
+          price: Math.floor(product.price * 85),
+          image: product.image,
+          quantity: 1,
+        });
+        toast.success("Item Added to Cart");
+      }
     } catch (error) {
       console.error(error);
+      toast.error("Something went wrong, please try again.");
     }
   };
 
   if (!productData || productData.length === 0) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Spinner
+          radius={50}
+          color={"#efb11d"}
+          stroke={2}
+          visible={true}
+          className="react-spinner"
+        />
+      </div>
+    );
   }
-  
+
   return (
     <>
       <div className={style.gridWrapper}>
@@ -70,11 +90,11 @@ const ProductsList = () => {
         ))}
       </div>
       <ToastContainer
-        position="top-center"
-        autoClose={5000}
+        position="top-right"
+        autoClose={2000}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick={false}
+        closeOnClick={true}
         rtl={false}
         pauseOnFocusLoss
         draggable

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import style from "./SideBar.module.css";
 import { useProducts } from "../../context/productContext";
@@ -7,7 +9,13 @@ import { useProducts } from "../../context/productContext";
 const SideBar = () => {
   const [priceRange, setPriceRange] = useState(80000);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const { productData, searchedProduct, setSearchedProduct } = useProducts();
+  const [menuActive, setMenuActive] = useState(false);
+  const { productData, setSearchedProduct, isTablet } = useProducts();
+
+  const toggleMenu = () => {
+    setMenuActive(!menuActive);
+    console.log("ToggleMenu called");
+  };
 
   const handleCategoryChange = (e) => {
     const { value, checked } = e.target;
@@ -38,8 +46,21 @@ const SideBar = () => {
   }, [priceRange, selectedCategories, productData, setSearchedProduct]);
 
   return (
-    <div>
-      <div className={style.container}>
+    <div className={style.sidebarWrapper}>
+      {isTablet && (
+        <button className={style.menuButton} onClick={toggleMenu}>
+          <FontAwesomeIcon
+            icon={menuActive ? faTimes : faBars}
+            className={style.menuIcon}
+          />
+        </button>
+      )}
+
+      <div
+        className={`${style.container} ${
+          isTablet && !menuActive ? style.hidden : ""
+        }`}
+      >
         <h2 className={style.heading}>Filter</h2>
         <p className={style.price}>Price Upto: &#8377;{priceRange}</p>
         <input
@@ -86,6 +107,7 @@ const SideBar = () => {
           <label>Electronics</label>
         </div>
       </div>
+
       <Outlet />
     </div>
   );

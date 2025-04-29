@@ -35,10 +35,11 @@ export const AuthProvider = ({ children }) => {
         password
       );
       setUser(userCredentials.user);
-      console.log("Sign Up succesfull");
+      return true;
     } catch (error) {
       setError(errorMessage(error));
       console.error(error.message);
+      return false;
     }
   };
 
@@ -51,8 +52,7 @@ export const AuthProvider = ({ children }) => {
       );
       setUser(userCredentials.user);
       setError(null);
-      console.log("Sign In succesfull");
-      console.log("User Id", userCredentials.user);
+
       return true;
     } catch (error) {
       setError(errorMessage(error));
@@ -64,11 +64,12 @@ export const AuthProvider = ({ children }) => {
   const logOut = async () => {
     await signOut(auth);
     setUser(null);
-    console.log("Log out succesfull");
   };
 
   return (
-    <AuthContext.Provider value={{ user, error, setError, signUp, signIn, logOut }}>
+    <AuthContext.Provider
+      value={{ user, error, setError, signUp, signIn, logOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

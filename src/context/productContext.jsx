@@ -1,13 +1,12 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
-import { db } from "../config/firebaseInit";
-
 const ProductContext = createContext();
 
 export const ProductProvider = ({ children }) => {
   const [productData, setProductData] = useState([]);
   const [searchedProduct, setSearchedProduct] = useState([]);
+  const [isTablet, setIsTablet] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,9 +20,19 @@ export const ProductProvider = ({ children }) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const checkIfTablet = () => {
+      setIsTablet(window.innerWidth <= 1000);
+    };
+
+    checkIfTablet();
+    window.addEventListener("resize", checkIfTablet);
+    return () => window.removeEventListener("resize", checkIfTablet);
+  }, []);
+
   return (
     <ProductContext.Provider
-      value={{ productData, searchedProduct, setSearchedProduct }}
+      value={{ productData, searchedProduct, setSearchedProduct, isTablet }}
     >
       {children}
     </ProductContext.Provider>
